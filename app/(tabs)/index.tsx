@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   return (
@@ -9,10 +9,10 @@ export default function HomeScreen() {
         <Text className="text-red-500">
           Open up App.js to start working on your app!
         </Text>
-        <Text className='text-green-700 font-bold text-lg'>
+        <Text className="text-green-700 font-bold text-lg">
           Hii, Welcome Yugal
         </Text>
-        <Text className='text-cyan-500 font-semibold text-lg'>
+        <Text className="text-cyan-500 font-semibold text-lg">
           Let's start building
         </Text>
         <StatusBar style="auto" />
