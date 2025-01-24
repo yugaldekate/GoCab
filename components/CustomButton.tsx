@@ -1,8 +1,9 @@
 import { TouchableOpacity, Text } from "react-native";
+import { useColorScheme } from "nativewind";
 
 import { ButtonProps } from "@/types/type";
 
-const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
+const getBgVariantStyle = (variant: ButtonProps["bgVariant"], isDarkMode: boolean) => {
     switch (variant) {
         case "secondary":
             return "bg-gray-500";
@@ -11,16 +12,18 @@ const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
         case "success":
             return "bg-green-500";
         case "outline":
-            return "bg-transparent border-neutral-300 border-[0.5px]";
+            return isDarkMode
+                ? "bg-transparent border-gray-500 border-[0.5px]"
+                : "bg-transparent border-neutral-300 border-[0.5px]";
         default:
             return "bg-[#0286FF]";
     }
 };
 
-const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
+const getTextVariantStyle = (variant: ButtonProps["textVariant"], isDarkMode: boolean) => {
     switch (variant) {
         case "primary":
-            return "text-black";
+            return isDarkMode ? "text-white" : "text-black";
         case "secondary":
             return "text-gray-100";
         case "danger":
@@ -33,15 +36,23 @@ const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
 };
 
 const CustomButton = ({ onPress, title, bgVariant = "primary", textVariant = "default", IconLeft, IconRight, className, ...props }: ButtonProps) => {
+    const { colorScheme } = useColorScheme();
+    const isDarkMode = colorScheme === "dark";
+
     return (
         <TouchableOpacity
             onPress={onPress}
-            className={`w-full rounded-full p-3 flex flex-row justify-center items-center shadow-md shadow-neutral-400/70 ${getBgVariantStyle(bgVariant)} ${className}`}
+            className={`w-full rounded-full p-3 flex flex-row justify-center items-center shadow-md ${isDarkMode ? "shadow-black/50" : "shadow-neutral-400/70"} ${getBgVariantStyle(bgVariant, isDarkMode)} ${className}`}
             {...props}
         >
             {IconLeft && <IconLeft />}
 
-            <Text className={`text-lg font-bold ${getTextVariantStyle(textVariant)}`}>
+            <Text
+                className={`text-lg font-bold ${getTextVariantStyle(
+                    textVariant,
+                    isDarkMode
+                )}`}
+            >
                 {title}
             </Text>
 
@@ -50,4 +61,4 @@ const CustomButton = ({ onPress, title, bgVariant = "primary", textVariant = "de
     );
 };
 
-export default CustomButton;
+export default CustomButton
