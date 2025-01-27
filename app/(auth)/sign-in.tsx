@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Link } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
+
+import { useSignIn } from "@clerk/clerk-expo";
 
 import { icons, images } from "@/constants";
 
@@ -18,11 +20,42 @@ interface FormState {
 }
 
 const SignIn = () => {
+
+    const { signIn, setActive, isLoaded } = useSignIn();
+
     const { colorScheme } = useColorScheme();
     const [form, setForm] = useState<FormState>({
         email: "",
         password: "",
     });
+
+    // Handle the submission of the sign-in form
+    const onSignInPress = useCallback(async () => {
+        if (!isLoaded) return;
+
+        // Start the sign-in process using the email and password provided
+        try {
+            const signInAttempt = await signIn.create({
+                identifier: form.email,
+                password: form.password,
+            });
+
+            // If sign-in process is complete, set the created session as active
+            // and redirect the user
+            if (signInAttempt.status === 'complete') {
+                await setActive({ session: signInAttempt.createdSessionId });
+                router.replace("/(root)/(tabs)/home");
+            } else {
+                // If the status isn't complete, check why. User might need to
+                // complete further steps.
+                console.error(JSON.stringify(signInAttempt, null, 2));
+                Alert.alert("Error", "Log in failed. Please try again.");
+            }
+        } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2));
+            Alert.alert("Error", err.errors[0].longMessage);
+        }
+    }, [isLoaded, form]);
 
     return (
         <>
@@ -51,6 +84,7 @@ const SignIn = () => {
                         placeholder="Enter email"
                         icon={icons.email}
                         textContentType="emailAddress"
+                        keyboardType="email-address"
                         value={form.email}
                         onChangeText={(value: string) => setForm({ ...form, email: value })}
                     />
@@ -66,7 +100,7 @@ const SignIn = () => {
 
                     <CustomButton 
                         title="Sign In" 
-                        onPress={() => {}} 
+                        onPress={() => onSignInPress()} 
                         className="mt-6" 
                     />
 
