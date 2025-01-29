@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
+import { ReactNativeModal } from "react-native-modal";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 import { useSignUp } from "@clerk/clerk-expo";
@@ -13,7 +14,7 @@ import OAuth from "@/components/OAuth";
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 
-import { ReactNativeModal } from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 // Define the type for the form state
 interface FormState {
@@ -74,9 +75,17 @@ const SignUp = () => {
 
             // If verification was completed, set the session to active
             // and redirect the user
-            if (signUpAttempt.status === 'complete') {
-
-                //TODO: Create a database user
+            if (signUpAttempt.status === 'complete') {               
+                
+                // Create User in DB
+                await fetchAPI("/(api)/user", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        name: form.name,
+                        email: form.email,
+                        clerkId: signUpAttempt.createdUserId,
+                    }),
+                });
 
                 await setActive({ session: signUpAttempt.createdSessionId });
                 setVerification({ ...verification, state: "success" });
