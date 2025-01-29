@@ -39,18 +39,18 @@ export default function Layout() {
                 tabBarInactiveTintColor: "white",
                 tabBarShowLabel: false,
                 tabBarStyle: {
-                    backgroundColor: isDarkMode ? "#222" : "#f8f8f8", // Adjust for dark/light mode
-                    borderRadius: 50,
-                    paddingBottom: 0, // iOS only
+                    backgroundColor: "#171616", // Adjust for dark/light mode
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
                     alignItems: "center",
                     overflow: "hidden",
+                    borderRadius: 50,
+                    paddingBottom: 0, // iOS only
                     marginHorizontal: 20,
-                    marginBottom: 20,
+                    marginBottom: 5,
                     height: 65,
-                    position: "relative",
+                    position: "absolute",
                     borderTopWidth: 0,
                     elevation: 5,
                     shadowColor: "#000",
