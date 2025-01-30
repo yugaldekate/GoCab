@@ -7,6 +7,8 @@ import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from
 import { useUser } from '@clerk/clerk-expo';
 
 import { icons, images } from '@/constants';
+
+import Map from '@/components/Map';
 import RideCard from '@/components/RideCard';
 import GoogleTextInput from '@/components/GoogleTextInput';
 
@@ -170,7 +172,7 @@ const Home = () => {
                                 Your current location
                             </Text>
                             <View className="flex flex-row items-center bg-transparent h-[300px]">
-                                {/* Map  */}
+                                <Map/>
                             </View>
                         </>
 
