@@ -47,3 +47,47 @@ declare interface GoogleInputProps {
     textInputBackgroundColor?: string;
     handlePress: ({ latitude, longitude, address} : { latitude: number; longitude: number; address: string }) => void;
 }
+
+declare interface LocationStore {
+    userLatitude: number | null;
+    userLongitude: number | null;
+    userAddress: string | null;
+    destinationLatitude: number | null;
+    destinationLongitude: number | null;
+    destinationAddress: string | null;
+    setUserLocation: ({ latitude, longitude, address }: { latitude: number, longitude: number, address: string }) => void;
+    setDestinationLocation: ({ latitude, longitude, address }: { latitude: number; longitude: number; address: string }) => void;
+}
+
+declare interface MarkerData {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string;
+    car_image_url: string;
+    car_seats: number;
+    rating: number;
+    latitude: number;
+    longitude: number;
+    title: string;
+    time?: number;
+    price?: string;
+}
+
+declare interface DriverStore {
+    drivers: MarkerData[];
+    selectedDriver: number | null;
+    setSelectedDriver: (driverId: number) => void;
+    setDrivers: (drivers: MarkerData[]) => void;
+    clearSelectedDriver: () => void;
+}
+
+declare interface Driver {
+    id: number;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string;
+    car_image_url: string;
+    car_seats: number;
+    rating: number;
+}
