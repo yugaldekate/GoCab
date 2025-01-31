@@ -1,4 +1,6 @@
-import React from 'react';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import * as Location from "expo-location";
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,8 +14,41 @@ import Map from '@/components/Map';
 import RideCard from '@/components/RideCard';
 import GoogleTextInput from '@/components/GoogleTextInput';
 
+import { useLocationStore } from '@/store';
+
 const Home = () => {
     const { user } = useUser();
+
+    const { setUserLocation, setDestinationLocation } = useLocationStore();
+    const [hasPermissions, setHasPermissions] = useState(false);
+
+    useEffect(() => {
+
+        const requestLocation = async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+
+            if (status !== "granted") {
+                setHasPermissions(false);
+                return;
+            }
+        
+            let location = await Location.getCurrentPositionAsync({});
+        
+            const address = await Location.reverseGeocodeAsync({
+                latitude: location.coords?.latitude!,
+                longitude: location.coords?.longitude!,
+            });
+            
+            setUserLocation({
+                latitude: location.coords?.latitude,
+                longitude: location.coords?.longitude,
+                address: `${address[0].formattedAddress}`,
+            });
+        };
+
+        requestLocation();
+
+    }, []);
 
     const { colorScheme } = useColorScheme();
     const isDarkMode = colorScheme === "dark";
@@ -23,6 +58,15 @@ const Home = () => {
     const backgroundColor = isDarkMode ? "bg-gray-800" : "bg-gray-200";
 
     const loading = false;
+
+    const handleDestinationPress = (location: { latitude: number, longitude: number, address: string }) => {
+        console.log("handleDestination : ", location.address);
+        
+
+        setDestinationLocation(location);
+    
+        router.push("/(root)/find-ride");
+    };
 
     const recentRides = [
         {
@@ -164,7 +208,7 @@ const Home = () => {
                         <GoogleTextInput
                             icon={icons.search}
                             containerStyle= {`${backgroundColor} shadow-md shadow-neutral-300`}
-                            handlePress={() => {}}
+                            handlePress={(location) => handleDestinationPress(location)}
                         />
 
                         <>
