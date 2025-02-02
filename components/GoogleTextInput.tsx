@@ -18,7 +18,7 @@ interface GeoapifyPlace {
     };
 }
 
-const GeoapifyTextInput = ({ icon, containerStyle, initialLocation, textInputBackgroundColor, handlePress }: GoogleInputProps) => {
+const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackgroundColor, handlePress }: GoogleInputProps) => {
     const { colorScheme } = useColorScheme();
     const isDarkMode = colorScheme === "dark";
 
@@ -26,7 +26,7 @@ const GeoapifyTextInput = ({ icon, containerStyle, initialLocation, textInputBac
     const textColor = isDarkMode ? "#FFFFFF" : "#171616";
     const backgroundColor = isDarkMode ? "bg-gray-800" : "bg-gray-200";
 
-    const [query, setQuery] = useState<string>(""); 
+    const [query, setQuery] = useState<string | undefined>(initialLocation); 
     const [suggestions, setSuggestions] = useState<GeoapifyPlace[]>([]);
 
     const fetchPlaces = async (text: string) => {
@@ -93,9 +93,20 @@ const GeoapifyTextInput = ({ icon, containerStyle, initialLocation, textInputBac
                 {/* Suggestions list */}
                 {suggestions.length > 0 && (
                     <FlatList
-                        data={suggestions}
+                        data={suggestions.slice(0, 4)}
                         keyExtractor={(item, index) => item.properties.place_id + index}
                         keyboardShouldPersistTaps="handled"
+                        scrollEnabled={true}
+                        style={{
+                            position: "absolute",
+                            top: 60, // Adjust based on the input height
+                            width: "100%",
+                            maxHeight: 200, // Limit the height of the suggestions list
+                            zIndex: 99,
+                            backgroundColor: isDarkMode ? "#2d2d2d" : "#fff", // Added background for better contrast
+                            borderRadius: 8,
+                            overflow: "hidden",
+                        }}
                         renderItem={({ item }: { item: GeoapifyPlace }) => (
                             <TouchableOpacity
                                 onPress={() => {
@@ -124,16 +135,6 @@ const GeoapifyTextInput = ({ icon, containerStyle, initialLocation, textInputBac
                                 </Text>
                             </TouchableOpacity>
                         )}
-                        style={{
-                            position: "absolute",
-                            top: 70, // Adjust based on the input height
-                            width: "100%",
-                            maxHeight: 200, // Limit the height of the suggestions list
-                            zIndex: 99,
-                            backgroundColor: isDarkMode ? "#2d2d2d" : "#fff", // Added background for better contrast
-                            borderRadius: 8,
-                            overflow: "hidden",
-                        }}
                     />
                 )}
             </View>
@@ -141,4 +142,4 @@ const GeoapifyTextInput = ({ icon, containerStyle, initialLocation, textInputBac
     );
 };
 
-export default GeoapifyTextInput;
+export default GoogleTextInput;
