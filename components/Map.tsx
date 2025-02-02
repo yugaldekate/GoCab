@@ -67,6 +67,16 @@ const Map = () => {
         
             setMarkers(newMarkers);
         }
+    }, []);
+
+    useEffect(() => {
+        if (Array.isArray(drivers)) {
+            if (!userLatitude || !userLongitude) return;
+        
+            const newMarkers = generateMarkersFromData({ data: drivers, userLatitude, userLongitude }); //mock driver locations
+        
+            setMarkers(newMarkers);
+        }
     }, [drivers, userLatitude, userLongitude]);
 
     return (
