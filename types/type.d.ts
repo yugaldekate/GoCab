@@ -91,3 +91,9 @@ declare interface Driver {
     car_seats: number;
     rating: number;
 }
+
+declare interface DriverCardProps {
+    item: MarkerData;
+    selected: number;
+    setSelected: () => void;
+}

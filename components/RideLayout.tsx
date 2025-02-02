@@ -20,8 +20,8 @@ const RideLayout = ({ title, snapPoints, children }: RideLayoutProps) => {
     const { colorScheme } = useColorScheme();
     const isDarkMode = colorScheme === "dark";
     
-    const tintColor = isDarkMode ? "white" : "#171616";
-    const backgroundColor = isDarkMode ? "bg-gray-800" : "bg-gray-200";
+    // const tintColor = isDarkMode ? "white" : "#171616";
+    // const backgroundColor = isDarkMode ? "bg-gray-800" : "bg-gray-200";
 
     const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -34,12 +34,12 @@ const RideLayout = ({ title, snapPoints, children }: RideLayoutProps) => {
                     
                     <View className="flex flex-row absolute z-10 top-16 items-center justify-start px-5">
                         <TouchableOpacity onPress={() => router.back()}>
-                            <View className={`w-10 h-10 rounded-full items-center justify-center ${backgroundColor}`}>
+                            <View className={`w-10 h-10 rounded-full items-center justify-center bg-gray-800`}>
                                 <Image
                                     source={icons.backArrow}
                                     resizeMode="contain"
                                     className="w-6 h-6"
-                                    tintColor={tintColor}
+                                    tintColor={"white"}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -59,15 +59,11 @@ const RideLayout = ({ title, snapPoints, children }: RideLayoutProps) => {
                     backgroundStyle={{backgroundColor: isDarkMode ? "#000" : "#fff"}}
                     handleIndicatorStyle={{backgroundColor: isDarkMode ? "#fff" : "#000"}}
                 >
-                    {title === "Choose a Rider" ? (
-                        <BottomSheetView style={{ flex: 1, padding: 20 }}>
-                            {children}
-                        </BottomSheetView>
-                    ) : (
-                        <BottomSheetScrollView style={{ flex: 1, padding: 20 }}>
-                            {children}
-                        </BottomSheetScrollView>
-                    )}
+                    
+                    <BottomSheetScrollView style={{ flex: 1, padding: 20 }}>
+                        {children}
+                    </BottomSheetScrollView>
+                
                 </BottomSheet>
             </View>
         </GestureHandlerRootView>        
