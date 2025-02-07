@@ -60,9 +60,7 @@ const Home = () => {
     const loading = false;
 
     const handleDestinationPress = (location: { latitude: number, longitude: number, address: string }) => {
-        console.log("handleDestination : ", location.address);
-        
-
+   
         setDestinationLocation(location);
     
         router.push("/(root)/find-ride");
