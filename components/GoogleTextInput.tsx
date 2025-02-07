@@ -115,8 +115,6 @@ const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackg
                                         longitude: item.geometry.coordinates[0],
                                         address: item.properties.formatted,
                                     });
-
-                                    console.log(item);
                                     
                                     setQuery(item.properties.formatted);
                                     setSuggestions([]);
