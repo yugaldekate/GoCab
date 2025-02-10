@@ -104,8 +104,8 @@ const Map = () => {
 
     if (loading || (!userLatitude && !userLongitude)) {
         return (
-            <View className="flex justify-between items-center w-full">
-                <ActivityIndicator size="small" color="#000" />
+            <View className="flex justify-center items-center w-full">
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }

@@ -24,6 +24,7 @@ import star from "@/assets/icons/star.png";
 import target from "@/assets/icons/target.png";
 import to from "@/assets/icons/to.png";
 import check from "@/assets/images/check.png";
+import error from "@/assets/images/error.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
@@ -41,6 +42,7 @@ export const images = {
     signUpCar,
     signUpCarDark,
     check,
+    error,
     noResult,
     message,
 };

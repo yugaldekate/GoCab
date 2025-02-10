@@ -1,13 +1,18 @@
 import React, { useState } from "react";
+import { router } from "expo-router";
 import * as Linking from "expo-linking";
-import { Alert } from "react-native";
-import { useLocationStore } from "@/store";
+import ReactNativeModal from "react-native-modal";
+import { Alert, Image, Text, View, ActivityIndicator } from "react-native";
+
 import { useAuth } from "@clerk/clerk-expo";
 import CustomButton from "@/components/CustomButton";
 import { useStripe } from "@stripe/stripe-react-native";
 
-import { PaymentProps } from "@/types/type";
 import { fetchAPI } from "@/lib/fetch";
+import { PaymentProps } from "@/types/type";
+import { useLocationStore } from "@/store";
+
+import { images } from "@/constants";
 
 async function fetchPaymentSheetParams({fullName, email, amount}: {fullName: string, email: string, amount: string}): Promise<{ paymentIntent: string, ephemeralKey: string, customer: string }> {
     return fetch(`/(api)/(stripe)/create`, {
@@ -23,19 +28,20 @@ async function fetchPaymentSheetParams({fullName, email, amount}: {fullName: str
     }).then((res) => res.json());
 }
 
-const Payment = ( { fullName, email, amount, driverId, rideTime }: PaymentProps) => {
-
+const Payment = ({ fullName, email, amount, driverId, rideTime }: PaymentProps) => {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { userAddress, userLongitude, userLatitude, destinationLatitude, destinationAddress, destinationLongitude } = useLocationStore();
-
     const { userId } = useAuth();
+    
     const [success, setSuccess] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const initializePaymentSheet = async () => {
-        const { paymentIntent, ephemeralKey, customer } = await fetchPaymentSheetParams({fullName, email, amount});
+        setLoading(true);
 
-        // Use Mock payment data: https://docs.stripe.com/payments/accept-a-payment?platform=react-native&ui=payment-sheet#react-native-test
+        const { paymentIntent, ephemeralKey, customer } = await fetchPaymentSheetParams({ fullName, email, amount });
+
         const { error } = await initPaymentSheet({
             merchantDisplayName: "GoCab, Inc.",
             customerId: customer,
@@ -52,26 +58,26 @@ const Payment = ( { fullName, email, amount, driverId, rideTime }: PaymentProps)
                 merchantCountryCode: "US",
             },
         });
-            if (!error) {
-            setLoading(true);
+
+        if (!error) {
+            setLoading(false);
         }
     };
 
     const openPaymentSheet = async () => {
+        setLoading(true);
         await initializePaymentSheet();
-    
+
         const { error } = await presentPaymentSheet();
-    
+
         if (error) {
-            Alert.alert(`Error code: ${error.code}`, error.message);
+            setErrorMessage(`Error code: ${error.code}\n${error.message}`);
         } else {
             setSuccess(true);
 
             await fetchAPI("/(api)/ride/create", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     origin_address: userAddress,
                     destination_address: destinationAddress,
@@ -86,18 +92,71 @@ const Payment = ( { fullName, email, amount, driverId, rideTime }: PaymentProps)
                     user_id: userId,
                 }),
             });
-
-            Alert.alert("Success", "Your order is confirmed!");
         }
+        setLoading(false);
     };
 
     return (
         <>
-            <CustomButton
-                title="Confirm Ride"
-                className="my-10"
-                onPress={openPaymentSheet}
+            <CustomButton 
+                title="Confirm Ride" 
+                className="my-10" 
+                onPress={openPaymentSheet} 
             />
+
+            {/* Loading Overlay */}
+            <ReactNativeModal isVisible={loading} backdropOpacity={0.5}>
+                <View className="flex items-center justify-center bg-white p-6 rounded-2xl">
+                    <ActivityIndicator size="large" color="#3498db" />
+                    <Text className="mt-3 text-lg font-JakartaBold">
+                        Processing Payment...
+                    </Text>
+                </View>
+            </ReactNativeModal>
+
+            {/* Error Modal */}
+            <ReactNativeModal
+                isVisible={!!errorMessage}
+                onBackdropPress={() => setErrorMessage(null)}
+            >
+                <View className="flex flex-col items-center justify-center bg-white p-7 rounded-2xl">
+                    <Image source={images.error} className="w-28 h-28 mt-5" />
+
+                    <Text className="text-xl font-JakartaBold mt-5 text-red-600">
+                        Payment Failed
+                    </Text>
+
+                    <Text className="text-md text-general-200 font-JakartaRegular text-center mt-3">
+                        {errorMessage}
+                    </Text>
+
+                    <CustomButton
+                        title="Try Again"
+                        onPress={() => setErrorMessage(null)}
+                        className="mt-5"
+                    />
+                </View>
+            </ReactNativeModal>
+
+            {/* Success Modal */}
+            <ReactNativeModal isVisible={success} onBackdropPress={() => setSuccess(false)}>
+                <View className="flex items-center justify-center bg-white p-7 rounded-2xl">
+                    <Image source={images.check} className="w-28 h-28 mt-5" />
+                    <Text className="text-2xl text-center font-JakartaBold mt-5">
+                        Booking placed successfully
+                    </Text>
+                    <Text className="text-md text-general-200 font-JakartaRegular text-center mt-3">
+                        Thank you for your booking. Your reservation has been successfully placed. Please proceed with your trip.
+                    </Text>
+                    <CustomButton title="Back Home" 
+                        className="mt-5" 
+                        onPress={() => { 
+                            setSuccess(false)
+                            router.push("/(root)/(tabs)/home") 
+                        }} 
+                    />
+                </View>
+            </ReactNativeModal>
         </>
     );
 };
