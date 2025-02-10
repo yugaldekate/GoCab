@@ -11,6 +11,7 @@ import Payment from "@/components/Payment";
 import RideLayout from "@/components/RideLayout";
 
 import { useDriverStore, useLocationStore } from "@/store";
+import ExpoStripeProvider from "@/components/StripeProvider";
 
 const BookRide = () => {
 
@@ -28,11 +29,7 @@ const BookRide = () => {
     const tintColor = isDarkMode ? "white" : "#171616";
 
     return (
-        <StripeProvider
-            publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
-            merchantIdentifier="merchant.com.gocab"
-            urlScheme="myapp"
-        >
+        <ExpoStripeProvider>
             <RideLayout title="Book Ride">
                 <>
                     <Text className={`text-xl font-JakartaSemiBold mb-3 ${textColor}`}>
@@ -125,7 +122,7 @@ const BookRide = () => {
                     />
                 </>
             </RideLayout>
-        </StripeProvider>
+        </ExpoStripeProvider>
     );
 };
 
