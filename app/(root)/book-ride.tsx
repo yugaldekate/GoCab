@@ -22,6 +22,8 @@ const BookRide = () => {
 
     const driverDetails = drivers?.filter((driver) => +driver.id === selectedDriver)[0];
 
+    console.log("Driver : ", driverDetails)
+
     const { colorScheme } = useColorScheme();
     const isDarkMode = colorScheme === "dark";
         
@@ -42,12 +44,15 @@ const BookRide = () => {
                             className="w-28 h-28 rounded-full"
                         />
 
-                        <View className="flex flex-row items-center justify-center mt-5 space-x-2">
+                        <View className="flex items-center justify-center mt-5 space-x-2">
                             <Text className={`text-lg font-JakartaSemiBold ${textColor}`}>
-                                Type : {driverDetails?.title}
+                                Driver's Name : {driverDetails?.title}
                             </Text>
 
                             <View className="flex flex-row items-center space-x-0.5">
+                                <Text className={`text-lg font-JakartaSemiBold ${textColor}`}>
+                                    Rating : 
+                                </Text>
                                 <Image
                                     source={icons.star}
                                     className="w-5 h-5"
@@ -76,6 +81,15 @@ const BookRide = () => {
                             </Text>
                             <Text className="text-lg font-JakartaRegular">
                                 {formatTime(driverDetails?.time!)}
+                            </Text>
+                        </View>
+
+                        <View className="flex flex-row items-center justify-between w-full border-b border-white py-3">
+                            <Text className="text-lg font-JakartaRegular">
+                                Distance
+                            </Text>
+                            <Text className="text-lg font-JakartaRegular">
+                                {(driverDetails?.distance! / 1000).toFixed(2)} km
                             </Text>
                         </View>
 

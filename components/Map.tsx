@@ -95,6 +95,8 @@ const Map = () => {
         if (markers.length > 0 && destinationLatitude !== undefined && destinationLongitude !== undefined) {
             const getTime = async () => {
                 const driversWithTime = await fetchTime();
+                console.log("DriversWithTime : ", driversWithTime);
+                
                 setDrivers(driversWithTime);                
             };
 

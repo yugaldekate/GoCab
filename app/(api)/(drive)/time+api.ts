@@ -103,7 +103,7 @@ export async function POST(request: Request) {
                 // Calculate price assuming 0.5 per minute plus random price
                 const price = (totalTime * 0.5 + randomPrice).toFixed(2);  // Adding random price to the base price
 
-                return { ...marker, time: totalTime, price };
+                return { ...marker, time: totalTime, price, distance: responseToDestination.distance };
             } catch (error) {
                 console.error("Error processing marker:", error);
                 return { ...marker, time: null, price: null };
