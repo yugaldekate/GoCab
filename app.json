@@ -41,7 +41,7 @@
       [
         "@stripe/stripe-react-native",
         {
-          "merchantIdentifier": "merchant.com.ExpoStripe",
+          "merchantIdentifier": "merchant.com.GoCab",
           "publishableKey": "pk_test_51QqrAhL10n8pnyJuLjJqKZrjgns5dwR5h8r4Sf2okhicT6vszDRivWcnOPHDK5HoCKMBfVNFocaKXuaJGPDlYBai000A3trpXi"
         }
       ]

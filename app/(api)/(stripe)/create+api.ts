@@ -18,8 +18,8 @@ export async function POST(req: Request) {
         customer = doesCustomerExist.data[0];
     } else {
         const newCustomer = await stripe.customers.create({
-        name,
-        email,
+            name,
+            email,
         });
 
         customer = newCustomer;

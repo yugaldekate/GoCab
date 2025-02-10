@@ -37,15 +37,14 @@ const Payment = ( { fullName, email, amount, driverId, rideTime }: PaymentProps)
 
         // Use Mock payment data: https://docs.stripe.com/payments/accept-a-payment?platform=react-native&ui=payment-sheet#react-native-test
         const { error } = await initPaymentSheet({
-            merchantDisplayName: "Expo, Inc.",
-
+            merchantDisplayName: "GoCab, Inc.",
             customerId: customer,
             customerEphemeralKeySecret: ephemeralKey,
             paymentIntentClientSecret: paymentIntent,
             allowsDelayedPaymentMethods: true,
             defaultBillingDetails: {
-                name: "Jane Doe",
-                email: "jenny.rosen@example.com",
+                name: fullName || email.split("@")[0],
+                email: email,
                 phone: "888-888-8888",
             },
             returnURL: Linking.createURL("stripe-redirect"),
@@ -67,7 +66,7 @@ const Payment = ( { fullName, email, amount, driverId, rideTime }: PaymentProps)
             Alert.alert(`Error code: ${error.code}`, error.message);
         } else {
             setSuccess(true);
-            
+
             await fetchAPI("/(api)/ride/create", {
                 method: "POST",
                 headers: {
