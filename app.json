@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "gocab",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -24,9 +24,9 @@
     },
     "plugins": [
       [
-        "expo-router", 
+        "expo-router",
         {
-          "origin": "https://gocab.dev/"
+          "origin": "https://gocab.expo.app"
         }
       ],      
       [
@@ -36,6 +36,13 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.GoCab",
+          "publishableKey": "pk_test_51QqrAhL10n8pnyJuLjJqKZrjgns5dwR5h8r4Sf2okhicT6vszDRivWcnOPHDK5HoCKMBfVNFocaKXuaJGPDlYBai000A3trpXi"
         }
       ]
     ],

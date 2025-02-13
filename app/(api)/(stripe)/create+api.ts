@@ -1,17 +1,14 @@
-import { Stripe } from "stripe";
+// https://docs.stripe.com/payments/accept-a-payment?platform=react-native&ui=payment-sheet
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export async function POST(request: Request) {
-    const body = await request.json();
+import { stripe } from "@/utils/stripe-server";
+
+export async function POST(req: Request) {
+
+    const body = await req.json();
     const { name, email, amount } = body;
 
-    if (!name || !email || !amount) {
-        return new Response(JSON.stringify({ error: "Missing required fields" }), {
-            status: 400,
-        });
-    }
-
+    // Use an existing Customer ID if this is a returning customer.
     let customer;
     const doesCustomerExist = await stripe.customers.list({
         email,
@@ -30,24 +27,23 @@ export async function POST(request: Request) {
 
     const ephemeralKey = await stripe.ephemeralKeys.create(
         { customer: customer.id },
-        { apiVersion: "2024-06-20" },
+        { apiVersion: "2024-06-20" }
     );
-
+      
+    
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: parseInt(amount) * 100,
-        currency: "usd",
+        amount: Math.round(parseFloat(amount) * 100),
+        currency: 'usd',
         customer: customer.id,
         automatic_payment_methods: {
             enabled: true,
-            allow_redirects: "never",
         },
     });
 
-    return new Response(
-        JSON.stringify({
-            paymentIntent: paymentIntent,
-            ephemeralKey: ephemeralKey,
-            customer: customer.id,
-        }),
-    );
+    return Response.json({
+        paymentIntent: paymentIntent.client_secret,
+        ephemeralKey: ephemeralKey.secret,
+        customer: customer.id,
+        publishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    });
 }

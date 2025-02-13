@@ -71,6 +71,7 @@ declare interface MarkerData {
     longitude: number;
     title: string;
     time?: number;
+    distance?: number;
     price?: string;
 }
 

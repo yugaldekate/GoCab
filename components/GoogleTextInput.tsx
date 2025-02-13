@@ -4,13 +4,13 @@ import { useState } from "react";
 
 import { GoogleInputProps } from "@/types/type";
 import { icons } from "@/constants";
+import { useRoute } from "@react-navigation/native";
 
-const GEOAPIFY_API_KEY = process.env.EXPO_PUBLIC_GEOAPIFY_API_KEY; // Replace with your API key
+const GEOAPIFY_API_KEY = process.env.EXPO_PUBLIC_GEOAPIFY_API_KEY;
 
-// Define the type for the items returned from Geoapify API
 interface GeoapifyPlace {
     geometry: {
-        coordinates: [number, number]; // [longitude, latitude]
+        coordinates: [number, number];
     };
     properties: {
         formatted: string;
@@ -29,6 +29,10 @@ const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackg
     const [query, setQuery] = useState<string | undefined>(initialLocation); 
     const [suggestions, setSuggestions] = useState<GeoapifyPlace[]>([]);
 
+    const route = useRoute();
+
+    const isHomePage = route.name === "home";
+
     const fetchPlaces = async (text: string) => {
         if (text.length < 3) {
             setSuggestions([]);
@@ -39,7 +43,6 @@ const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackg
             const response = await fetch(
                 `https://api.geoapify.com/v1/geocode/autocomplete?text=${text}&apiKey=${GEOAPIFY_API_KEY}`
             );
-
             const data = await response.json();
             setSuggestions(data.features || []);
         } catch (error) {
@@ -49,18 +52,11 @@ const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackg
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            <View className={`flex flex-col items-center justify-center relative z-50 rounded-xl ${containerStyle}`}>
-                {/* Left button with icon */}
+            <View className={`flex flex-col items-center justify-center relative rounded-xl ${containerStyle} ${isHomePage ? 'z-50' : ""}`} style={{ position: "relative" }}>
                 <View className="absolute left-4 transform -translate-y-1/2">
-                    <Image
-                        source={icon ? icon : icons.search}
-                        tintColor={tintColor}
-                        className="w-6 h-6"
-                        resizeMode="contain"
-                    />
+                    <Image source={icon ? icon : icons.search} tintColor={tintColor} className="w-6 h-6" resizeMode="contain" />
                 </View>
 
-                {/* Search input */}
                 <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
                     <TextInput
                         placeholder="Search"
@@ -69,71 +65,69 @@ const GoogleTextInput = ({ icon, containerStyle, initialLocation, textInputBackg
                         onChangeText={(text) => {
                             setQuery(text);
                             fetchPlaces(text);
-                            if(text.length === 0){
-                                setSuggestions([]);
-                            }  
+                            if (text.length === 0) setSuggestions([]);
                         }}
                         style={{
                             color: textColor,
-                            backgroundColor: textInputBackgroundColor ? textInputBackgroundColor : backgroundColor,
+                            backgroundColor: textInputBackgroundColor || backgroundColor,
                             fontSize: 16,
                             fontWeight: "600",
                             paddingLeft: 40,
                             paddingVertical: 12,
-                            flex: 1, // Ensures input takes up available space
-                            minWidth: 50, // Prevents excessive shrinking
+                            flex: 1,
+                            minWidth: 50,
                             borderRadius: 200,
                             textAlignVertical: "center",
                         }}
                         placeholderTextColor="gray"
-                        numberOfLines={1} // Keeps input in a single line
+                        numberOfLines={1}
                     />
                 </View>
 
-                {/* Suggestions list */}
                 {suggestions.length > 0 && (
-                    <FlatList
-                        data={suggestions.slice(0, 4)}
-                        keyExtractor={(item, index) => item.properties.place_id + index}
-                        keyboardShouldPersistTaps="handled"
-                        scrollEnabled={true}
-                        style={{
-                            position: "absolute",
-                            top: 60, // Adjust based on the input height
-                            width: "100%",
-                            maxHeight: 200, // Limit the height of the suggestions list
-                            zIndex: 99,
-                            backgroundColor: isDarkMode ? "#2d2d2d" : "#fff", // Added background for better contrast
-                            borderRadius: 8,
-                            overflow: "hidden",
-                        }}
-                        renderItem={({ item }: { item: GeoapifyPlace }) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    handlePress({
-                                        latitude: item.geometry.coordinates[1],
-                                        longitude: item.geometry.coordinates[0],
-                                        address: item.properties.formatted,
-                                    });
-                                    
-                                    setQuery(item.properties.formatted);
-                                    setSuggestions([]);
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        padding: 12,
-                                        borderBottomWidth: 1,
-                                        borderColor: isDarkMode ? "#444" : "#ccc",
-                                        backgroundColor: isDarkMode ? "#1F2937" : "#E5E7EB",
-                                        color: textColor,
+                    <View style={{ position: "absolute", top: "110%", width: "100%", zIndex: 40, elevation: 5 }}>
+                        <FlatList
+                            data={suggestions}
+                            keyExtractor={(item, index) => item.properties.place_id + index}
+                            keyboardShouldPersistTaps="handled"
+                            scrollEnabled={true}
+                            style={{
+                                // maxHeight: 350,
+                                backgroundColor: isDarkMode ? "#2d2d2d" : "#fff",
+                                borderRadius: 8,
+                                overflow: "scroll",
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.2,
+                                shadowRadius: 4,
+                            }}
+                            renderItem={({ item }: { item: GeoapifyPlace }) => (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        handlePress({
+                                            latitude: item.geometry.coordinates[1],
+                                            longitude: item.geometry.coordinates[0],
+                                            address: item.properties.formatted,
+                                        });
+                                        setQuery(item.properties.formatted);
+                                        setSuggestions([]);
                                     }}
                                 >
-                                    {item.properties.formatted}
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                    />
+                                    <Text
+                                        style={{
+                                            padding: 12,
+                                            borderBottomWidth: 1,
+                                            borderColor: isDarkMode ? "#444" : "#ccc",
+                                            backgroundColor: isDarkMode ? "#1F2937" : "#E5E7EB",
+                                            color: textColor,
+                                        }}
+                                    >
+                                        {item.properties.formatted}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
                 )}
             </View>
         </KeyboardAvoidingView>
