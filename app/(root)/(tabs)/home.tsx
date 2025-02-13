@@ -6,7 +6,7 @@ import { useColorScheme } from 'nativewind';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
-import { useUser } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 
 import { icons, images } from '@/constants';
 
@@ -23,6 +23,8 @@ const Home = () => {
 
     const { setUserLocation, setDestinationLocation } = useLocationStore();
     const [hasPermissions, setHasPermissions] = useState(false);
+
+    const { signOut } = useAuth();
 
     useEffect(() => {
 
@@ -68,6 +70,11 @@ const Home = () => {
         router.push("/(root)/find-ride");
     };
 
+    const handleSignOut = () => {
+        signOut();
+        router.replace("/(auth)/sign-in");
+    };
+
     return (
         <SafeAreaView className={`${isDarkMode ? "bg-black" : "bg-white"}`}>
             <StatusBar style={isDarkMode ? "light" : "dark"} />
@@ -95,7 +102,7 @@ const Home = () => {
                             </View>
 
                             <TouchableOpacity
-                                onPress={() => {}}
+                                onPress={() => handleSignOut()}
                                 className={`flex flex-row justify-center items-center w-10 h-10 rounded-full ${backgroundColor}`}
                             >
                                 <Image 
