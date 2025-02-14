@@ -148,7 +148,7 @@ const Home = () => {
                                 </Text>
                             </>
                         ) : (
-                            <ActivityIndicator size="small" color={`${isDarkMode ? "#fff" : "#000"}`} />
+                            <ActivityIndicator size="large" color={`${isDarkMode ? "#fff" : "#000"}`} />
                         )}
                     </View>
                 )}
